@@ -20,6 +20,7 @@ export class Game {
         if (this.board.turn() !== 'w' && socket === this.player1 || this.board.turn() !== 'b' && socket === this.player2) return;
         try {
             this.board.move(move);
+            console.log("move made",move);
         } catch (error) {
             console.log(error); 
             return;
@@ -34,10 +35,10 @@ export class Game {
         }
         //send the updated board to both players   
         if(this.board.turn() !== 'w'){
-            this.player2.send(JSON.stringify({ type: MOVE, payload: move }));
+            this.player2.send(JSON.stringify({ type: 'state', payload: this.board.fen() }));
             console.log("white moved");
         }else{
-            this.player1.send(JSON.stringify({ type: MOVE, payload: move }));
+            this.player1.send(JSON.stringify({ type: 'state', payload: this.board.fen()}));
             console.log("black moved");
         }
     }

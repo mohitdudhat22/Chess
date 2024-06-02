@@ -21,7 +21,9 @@ class GameManager {
     }
     addPlayerHandler(socket) {
         socket.on("message", (data) => {
+            var _a, _b;
             const message = JSON.parse(data.toString());
+            console.log(message, "this is the message");
             if (message.type === messages_1.INIT_GAME) {
                 if (this.pendingUser) {
                     //start the game here
@@ -39,7 +41,7 @@ class GameManager {
                 console.log(game, "<------this is your game");
                 if (game) {
                     console.log(message, "<------this is your game");
-                    if (message.move.from && message.move.to) {
+                    if (((_a = message.move) === null || _a === void 0 ? void 0 : _a.from) && ((_b = message.move) === null || _b === void 0 ? void 0 : _b.to)) {
                         game.makeMove(socket, message.move);
                     }
                 }

@@ -29,6 +29,7 @@ import { INIT_GAME, MOVE } from "./messages";
     private addPlayerHandler(socket : WebSocket | any){
         socket.on("message", (data : any)=>{
             const message = JSON.parse(data.toString());
+            console.log(message, "this is the message")
             if(message.type === INIT_GAME){
                 if(this.pendingUser){
                     //start the game here
@@ -46,7 +47,7 @@ import { INIT_GAME, MOVE } from "./messages";
                 console.log(game, "<------this is your game");
                 if(game){
                     console.log(message, "<------this is your game");
-                    if(message.move.from && message.move.to){
+                    if(message.move?.from && message.move?.to){
                         game.makeMove(socket, message.move);
                     }
                 }
