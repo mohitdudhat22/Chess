@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "chess.js": "^1.0.0-beta.8",
     "clsx": "^2.1.1",
     "express": "^4.19.2",
     "next": "14.2.3",
@@ -19,6 +20,7 @@
     "ws": "^8.17.0"
   },
   "devDependencies": {
+    "@types/chess.js": "^0.13.7",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",

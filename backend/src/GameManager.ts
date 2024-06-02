@@ -6,7 +6,7 @@ import { INIT_GAME, MOVE } from "./messages";
  //Waiting Room
  export class GameManager {
     private games: Game[];
-    private pendingUser: WebSocket | null;
+    private pendingUser: WebSocket | null | any;
     private users: WebSocket[];
 
     constructor(){
@@ -21,13 +21,13 @@ import { INIT_GAME, MOVE } from "./messages";
         this.addPlayerHandler(socket);
     }
 
-    removeUser(socket : WebSocket){
+    public removeUser(socket : WebSocket){
         this.users = this.users .filter((user) => user !== socket);
         //stop the game here because the player left the game
     }
 
-    private addPlayerHandler(socket : WebSocket){
-        socket.on("message", (data)=>{
+    private addPlayerHandler(socket : WebSocket | any){
+        socket.on("message", (data : any)=>{
             const message = JSON.parse(data.toString());
             if(message.type === INIT_GAME){
                 if(this.pendingUser){
@@ -38,13 +38,16 @@ import { INIT_GAME, MOVE } from "./messages";
                 }else{
                     this.pendingUser = socket;
                 }
+                console.log("player joined");
             }
 
             if(message.type === MOVE){
-                const game =this.games.find((game) => game.player1 === socket || game.player2 === socket);
+                const game = this.games.find((game:any) => game.player1 === socket || game.player2 === socket);
+                console.log(game, "<------this is your game");
                 if(game){
-                    if(message.data.from && message.data.to){
-                        game.makeMove(socket, message.data);
+                    console.log(message, "<------this is your game");
+                    if(message.move.from && message.move.to){
+                        game.makeMove(socket, message.move);
                     }
                 }
 
