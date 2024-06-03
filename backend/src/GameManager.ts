@@ -34,6 +34,7 @@ import { INIT_GAME, MOVE } from "./messages";
                 if(this.pendingUser){
                     //start the game here
                     const game = new Game(this.pendingUser, socket);
+                    console.log(game,"<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<This is game");
                     this.games.push(game);
                     this.pendingUser = null;
                 }else{

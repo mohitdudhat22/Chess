@@ -28,6 +28,7 @@ class GameManager {
                 if (this.pendingUser) {
                     //start the game here
                     const game = new Game_1.Game(this.pendingUser, socket);
+                    console.log(game, "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<This is game");
                     this.games.push(game);
                     this.pendingUser = null;
                 }
