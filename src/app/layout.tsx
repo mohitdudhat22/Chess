@@ -3,6 +3,7 @@ import { Inter as FontSans } from "next/font/google"
 import "./globals.css";
 import React from "react";
 import { cn } from "../lib/utils";
+import { Toaster } from "react-hot-toast";
 
 
 const fontSans = FontSans({
@@ -25,7 +26,10 @@ export default function RootLayout({
       <body className={cn(
         "min-h-screen bg-background font-sans antialiased",
         fontSans.variable
-      )} > {children}</body>
+      )} ><Toaster
+      position="top-center"
+      reverseOrder={false}
+    />{children}</body>
     </html >
   );
 }

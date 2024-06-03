@@ -6,6 +6,7 @@ import { useSocket } from '@/hooks/useSocket';
 import { Chess } from 'chess.js';
 import { Square, PieceSymbol, Color } from 'chess.js';
 import { cookies } from 'next/headers';
+import toast from 'react-hot-toast';
 
 interface ChessBoardProps {
   board: (
@@ -19,6 +20,7 @@ export default function Game() {
   const socket: WebSocket | null | any | undefined = useSocket();
   const [chessBoard , setChessBoard] = useState<Chess | null | any>(null);
   const [board, setBoard] = useState<ChessBoardProps[][] | null | any>(new Chess().board());
+  const [isWhite, setIsWhite] = useState<boolean | null>(null);
   
   useEffect(() => {
     if (!socket) return;
@@ -30,7 +32,14 @@ export default function Game() {
           console.log("init game");
           setChessBoard(new Chess());
           setBoard(new Chess().board());
-          console.log(new Chess()?.board()); 
+          console.log(new Chess()?.board());
+          console.log(message);
+          toast.success('Successfully initialized!')
+          if(message.payload.color === "white"){
+            setIsWhite(true);
+          } else{
+            setIsWhite(false);
+          }
           break;
         case "move":
           console.log("move");
@@ -72,7 +81,7 @@ export default function Game() {
 
       <main className="flex flex-row flex-1 w-full p-4">
         <div className="flex-1 flex-grow-0 basis-3/5">
-          <ChessBoard board={board} socket={socket} setBoard={setBoard} chessBoard={chessBoard} setChessBoard={setChessBoard}/>
+          <ChessBoard board={board} socket={socket} setBoard={setBoard} chessBoard={chessBoard} setChessBoard={setChessBoard} isWhite={isWhite}/>
         </div>
         <div className="flex-1 flex-grow-0 basis-2/5 flex flex-col items-center p-4">
           <h2 className="text-2xl mb-4">Settings & Utilities</h2>
@@ -85,6 +94,8 @@ export default function Game() {
           <button className="w-full px-4 py-2 mb-4 text-xl bg-blue-600 rounded hover:bg-blue-700">
             Resign
           </button>
+          <h1>You are playing as {isWhite ? "white" : "black"}</h1>
+          <h1>Turn :- {chessBoard?.turn()}</h1>
         </div>
       </main>
     </div>
