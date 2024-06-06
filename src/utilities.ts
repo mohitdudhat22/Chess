@@ -1,7 +1,9 @@
+"use client"
 import { Color, PieceSymbol, Square, validateFen } from "chess.js";
 
 export const getColor = (rowIndex: number, columnIndex: number): string => {
-    return (rowIndex + columnIndex) % 2 === 0 ? "bg-gray-400" : "bg-gray-800";
+    console.log(rowIndex + columnIndex % 2 === 0 ? "bg-gray-400" : "bg-gray-800");
+    return (rowIndex + columnIndex) % 2 === 0 ? "bg-white" : "bg-gray-800";
   };
 
   export interface ChessBoardProps {

@@ -9,6 +9,8 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@auth/prisma-adapter": "^2.2.0",
+    "@prisma/client": "^5.15.0",
     "@types/ws": "^8.5.10",
     "chess.js": "^1.0.0-beta.8",
     "nodemon": "^3.1.0",

@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { Color, PieceSymbol, Square, validateFen } from "chess.js";
 import toast from "react-hot-toast";
-import { ChessBoardProps, getChessCoordinates, getColor, handleDragOver } from "@/utilitis";
+import { ChessBoardProps, getChessCoordinates, getColor, handleDragOver } from "@/utilities";
 
-
+// TODO:Redis Queue or Network file System
 const ChessBoard: React.FC<ChessBoardProps> = ({
   board,
   socket,
@@ -17,6 +17,7 @@ const ChessBoard: React.FC<ChessBoardProps> = ({
     type: PieceSymbol;
     color: Color;
   }>(null);
+  
   const [from, setFrom] = useState<null | Square | undefined | string>(null);
 
   const handleDragStart = (piece: {
@@ -27,8 +28,6 @@ const ChessBoard: React.FC<ChessBoardProps> = ({
     console.log('dragStart', piece.square)
     setDraggedPiece(piece);
   };
-
-
 
   const handleDrop = (rowIndex: number, columnIndex: number) => {
     const currSquare = getChessCoordinates(rowIndex, columnIndex ,isWhite);
@@ -116,14 +115,14 @@ const ChessBoard: React.FC<ChessBoardProps> = ({
   };
   return (
     <div
-    className="chessboard w-auto"
+    className="w-auto"
   >
       {board?.map((row, rowIndex) => (
         <div key={rowIndex} className="grid grid-cols-8 gap-0">
           {row.map((square, columnIndex) => (
             <div
               key={`${rowIndex}-${columnIndex}`}
-              className={`h-[100px] w-min-[100px] flex justify-center items-center ${getColor(
+              className={`h-[100px] w-min-[100px] flex justify-center items-center  ${getColor(
                 rowIndex,
                 columnIndex
               )}`}

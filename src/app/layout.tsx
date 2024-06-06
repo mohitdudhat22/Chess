@@ -1,15 +1,16 @@
 import type { Metadata } from "next";
-import { Inter as FontSans } from "next/font/google"
+import { Inter as FontSans } from "next/font/google";
 import "./globals.css";
 import React from "react";
 import { cn } from "../lib/utils";
 import { Toaster } from "react-hot-toast";
-
+import { MyContextProvider } from "@/Context/MyContext";
+import AuthProvider from "@/Context/AuthProvider";
 
 const fontSans = FontSans({
   subsets: ["latin"],
   variable: "--font-sans",
-})
+});
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -23,13 +24,19 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={cn(
-        "min-h-screen bg-background font-sans antialiased",
-        fontSans.variable
-      )} ><Toaster
-      position="top-center"
-      reverseOrder={false}
-    />{children}</body>
-    </html >
+      <body
+        className={cn(
+          "min-h-screen bg-background font-sans antialiased",
+          fontSans.variable
+        )}
+      >
+          <Toaster position="top-center" reverseOrder={false} />
+          <AuthProvider>
+        <MyContextProvider>
+          {children}
+        </MyContextProvider>
+        </AuthProvider>
+      </body>
+    </html>
   );
 }
