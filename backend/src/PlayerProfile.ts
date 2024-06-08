@@ -8,4 +8,5 @@ export class PlayerProfile{
         this.name = name;
         this.email = email;
     }
+    
 }

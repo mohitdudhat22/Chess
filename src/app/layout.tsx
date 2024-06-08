@@ -4,7 +4,7 @@ import "./globals.css";
 import React from "react";
 import { cn } from "../lib/utils";
 import { Toaster } from "react-hot-toast";
-import { MyContextProvider } from "@/Context/MyContext";
+import { MyContextProvider } from "@/Context/MyContextProvider";
 import AuthProvider from "@/Context/AuthProvider";
 
 const fontSans = FontSans({

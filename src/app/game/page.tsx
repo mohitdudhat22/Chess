@@ -7,6 +7,9 @@ import { Chess } from 'chess.js';
 import { Square, PieceSymbol, Color } from 'chess.js';
 import { cookies } from 'next/headers';
 import toast from 'react-hot-toast';
+import { getServerSession } from 'next-auth';
+import { options } from '../api/auth/[...nextauth]/options';
+import { useMyContext } from '@/Context/MyContextProvider';
 
 interface ChessBoardProps {
   board: (
@@ -21,7 +24,8 @@ export default function Game() {
   const [chessBoard , setChessBoard] = useState<Chess | null | any>(null);
   const [board, setBoard] = useState<ChessBoardProps[][] | null | any>(new Chess().board());
   const [isWhite, setIsWhite] = useState<boolean | null>(null);
-  
+  const session = getServerSession(options);
+  console.log(session);
   useEffect(() => {
     if (!socket) return;
     const handleMessage = (event: MessageEvent) => {
@@ -70,7 +74,7 @@ export default function Game() {
       socket.onmessage = null;
     };
   }, [socket]);
-  console.log(chessBoard?.ascii())
+  console.log(chessBoard?.ascii());
   return (
     <div className="container m-auto flex flex-col items-center justify-center min-h-screen text-white">
       <Head>
@@ -96,6 +100,7 @@ export default function Game() {
           </button>
           <h1>You are playing as {isWhite ? "white" : "black"}</h1>
           <h1>Turn :- {chessBoard?.turn()}</h1>
+          {/* <h1> you are : - {session}</h1> */}
         </div>
       </main>
     </div>

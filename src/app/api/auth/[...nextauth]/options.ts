@@ -14,10 +14,10 @@ interface User {
   } 
 export const options: NextAuthOptions = {
   providers: [
-    // GoogleProvider({
-    //   clientId: process.env.GOOGLE_CLIENT_ID as string,
-    //   clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
-    // }),
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID as string,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
+    }),
     GithubProvider({
       clientId: process.env.GITHUB_ID as string,
       clientSecret: process.env.GITHUB_SECRET as string,
@@ -30,9 +30,11 @@ export const options: NextAuthOptions = {
         },
         async authorize(credentials: Record<"username" | "password", string> | undefined, req: any) {
           const user:any = { id: 1, name: 'test', password: 'test' };
+          const user2:any = { id: 2, name: 'test2', password: 'test' };
+          
           if (
             credentials?.username === user.name &&
-            credentials?.password === user.password)
+            credentials?.password === user.password || credentials?.username === user2.name && credentials?.password == user.password)
           {
             console.log(user);
             return user;

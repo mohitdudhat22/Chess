@@ -4,6 +4,8 @@ import toast from "react-hot-toast";
 import { ChessBoardProps, getChessCoordinates, getColor, handleDragOver } from "@/utilities";
 
 // TODO:Redis Queue or Network file System
+//TODO: Setup the Open SSL secret key and the change mycontext to ContextProvider
+
 const ChessBoard: React.FC<ChessBoardProps> = ({
   board,
   socket,

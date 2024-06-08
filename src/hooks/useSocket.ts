@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 
 // TODO: setup different file for the url;
+//TDOO: set the serverside session to the client side
 export const useSocket = () => {
     const [socket, setSocket] = useState<WebSocket | null>(null);
     

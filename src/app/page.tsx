@@ -3,8 +3,10 @@ import Image from "next/image";
 import React from "react";
 import { options } from "./api/auth/[...nextauth]/options";
 import { redirect } from "next/navigation";
+import { useMyContext } from "@/Context/MyContextProvider";
 export default async function Home() {
   const session = await getServerSession(options);
+  console.log(session, "session is saved session");
   if(!session) redirect('api/auth/signin?callbackUrl=/server');
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">

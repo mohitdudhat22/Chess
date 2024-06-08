@@ -2,6 +2,8 @@ import { Chess } from "chess.js";
 import { GAME_OVER, INIT_GAME, MOVE } from "./messages";
 
 export class Game {
+    //TODO : here two players get connected to each other via the socket annonamsoly and i want do not want to connect annanomosly toeach other
+    /* here we will be set the users id along with websocket */
     public player1: WebSocket;
     public player2: WebSocket;
     private board: Chess;
@@ -41,5 +43,12 @@ export class Game {
             this.player1.send(JSON.stringify({ type: 'state', payload: this.board.fen()}));
             console.log("black moved");
         }
+
+
+        //TODO : here if chess game get completed then we add this match to the history of the user and make the game terminate and disconnect the socket
+
+        //TODO: here if chess game player get disconnceted then here will add feature to continue the match [after 30 seconds termination of the game] 
+
+        //TODO: user should not be able to play multiple games at once
     }
 }

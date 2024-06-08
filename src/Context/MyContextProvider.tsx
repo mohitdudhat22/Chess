@@ -15,11 +15,12 @@ export const useMyContext = () => {
 interface MyContextType {
     value: any;
     setValue: React.Dispatch<React.SetStateAction<any>>;
+
 }
 export const MyContextProvider: FC<{ children: ReactNode }> = ({ children }) => {
     const [value,setValue] = useState(null);
     return (
-        <MyContext.Provider value={{ value, setValue }}>
+        <MyContext.Provider value={{ value, setValue}}>
             {children}
         </MyContext.Provider>
     );
