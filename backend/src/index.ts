@@ -1,9 +1,9 @@
 import { GameManager } from './GameManager';
 import { WebSocketServer } from 'ws';
+import app from './server';
+const port = 3001;
 
 const wss = new WebSocketServer({ port: 8080 });
-const app = express();
-const port = 3001;
 const gameManager = new GameManager();
 wss.on('connection', function connection(ws) {
     gameManager.addPlayer(ws);
@@ -35,4 +35,6 @@ each object will reference to the game
 
 
 app.listen(port,() => console.log('server listening on port ' + port));
+
+
 
