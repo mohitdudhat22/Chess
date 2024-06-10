@@ -1,13 +1,17 @@
 import express, { Request, Response } from 'express';
 import bcrypt from 'bcrypt';
 import { PrismaClient } from '@prisma/client';
-import { addNewUser } from './query';
+import { addNewUser, getUser } from './query';
 const app = express();
 
 app.use(express.json());
 
-app.get('/signin',(req:Request,res:Response)=>{
-    res.send("HEllow wordl")
+app.post('/signin',async (req:Request, res:Response)=>{
+    const {password,email}=req.body;
+    console.log(password,email);
+    console.log(await getUser(email , password));
+    console.log(req.body);
+    res.send("HEllow wordl");
 })
 
 app.post('/signup',async (req:Request,res:Response)=>{

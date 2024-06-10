@@ -23,6 +23,11 @@ model User {
   updatedAt DateTime @updatedAt
 }
  
+model PlayerProfile{
+  id       String         @id @default(cuid())
+  currentGame
+  gameHistory 
+}
 // model Account {
 //   userId            String
 //   type              String
