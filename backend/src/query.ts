@@ -1,10 +1,26 @@
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcrypt";
+import { profile } from "console";
 const prisma = new PrismaClient();
 
-export async function addNewUser(data:any){
-    await prisma.user.create({data:data});
-    console.log("user added",data);
+export async function addNewUser(email: string, username: string, password: string) {
+    const hash = await bcrypt.hash(password, 10);
+    console.log(username,"<<<<<this is username");
+    await prisma.user.create({
+        data: {
+            email: email,
+            password: hash,
+            profile: {
+                create: {
+                    username: username,
+                },
+            },
+        },
+        include:{
+            profile:true
+        }
+    });
+    console.log("user added", username);
 }
 
 export async function getUser(email:string ,password:string){
@@ -19,7 +35,5 @@ export async function getUser(email:string ,password:string){
     return user;
 }
 
-export async function createUserProfile(id:string){
-    await prisma.playerProfile.create({data:{data}});
-}
+
 

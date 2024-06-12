@@ -7,27 +7,32 @@ generator client {
   provider = "prisma-client-js"
 }
  
-model User {
-  id            String          @id @default(cuid())
-  name          String?
-  email         String          @unique
-  // emailVerified DateTime?
-  // image         String?
-  password      String
-  // accounts      Account[]
-  // sessions      Session[]
-  // Optional for WebAuthn support
-  // Authenticator Authenticator[]
- 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
+  model User {
+  id        String          @id @default(cuid())
+  email     String          @unique
+  password  String
+  profile   PlayerProfile?
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+
+    // Uncomment or add additional fields as needed
+    // name          String?
+    // emailVerified DateTime?
+    // image         String?
+    // accounts      Account[]
+    // sessions      Session[]
+    // Authenticator Authenticator[]
+  }
  
 model PlayerProfile{
-  id       String         @id @default(cuid())
-  username
-  currentGame
-  gameHistory 
+  id          String    @id @default(cuid())
+  username    String
+  userId      String    @unique
+  currentGame String?
+  gameHistory String?
+  user        User?      @relation(fields: [userId], references: [id])
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 }
 // model Account {
 //   userId            String

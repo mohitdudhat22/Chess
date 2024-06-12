@@ -2,10 +2,13 @@ import express, { Request, Response } from 'express';
 import bcrypt from 'bcrypt';
 import { PrismaClient } from '@prisma/client';
 import { addNewUser, getUser } from './query';
+import { profile } from 'console';
+import { create } from 'domain';
 const app = express();
 
 app.use(express.json());
 
+//TODO :add OTP system
 app.post('/signin',async (req:Request, res:Response)=>{
     const {password,email}=req.body;
     console.log(password,email);
@@ -15,14 +18,10 @@ app.post('/signin',async (req:Request, res:Response)=>{
 })
 
 app.post('/signup',async (req:Request,res:Response)=>{
-    const {confirmPassword,password,email}=req.body;
-    console.log(confirmPassword,password,email);
-    const hash = await bcrypt.hash(password , 10);
-    console.log(await bcrypt.compare(password , hash));
-    console.log(hash);
+    const {confirmPassword,password,email,username}=req.body;
     console.log(req.body);
-    addNewUser({email:email,password:hash});
-    res.send("HEllow wordl");
+    await addNewUser(email,username, password);
+    res.send("Success");
 });
 
 export default app;
