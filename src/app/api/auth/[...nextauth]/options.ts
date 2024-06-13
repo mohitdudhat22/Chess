@@ -28,17 +28,30 @@ export const options: NextAuthOptions = {
           username: { label: 'username', type: 'text', placeholder: 'username' },
           password: { label: 'password', type: 'password', placeholder: 'password' },
         },
-        async authorize(credentials: Record<"username" | "password", string> | undefined, req: any) {
-          const user:any = { id: 1, name: 'test', password: 'test' };
-          const user2:any = { id: 2, name: 'test2', password: 'test' };
-          
-          if (
-            credentials?.username === user.name &&
-            credentials?.password === user.password || credentials?.username === user2.name && credentials?.password == user.password)
-          {
-            console.log(user);
-            return user;
-          } else {
+        async authorize(credentials: Credentials | undefined, req: any) {
+          if (!credentials) {
+            return null;
+          }  
+          try {
+            const response = await fetch('http://localhost:3001/signin', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                email: credentials?.username,
+                password: credentials?.password,
+              }),
+            });
+            const data = await response.json();
+            if (data.token) {
+              return data.token;
+            } else {
+              return null;
+            }
+          } catch (error) {
+            alert(error);
+            console.error(error);
             return null;
           }
         },

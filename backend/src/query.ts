@@ -1,6 +1,5 @@
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcrypt";
-import { profile } from "console";
 const prisma = new PrismaClient();
 
 export async function addNewUser(email: string, username: string, password: string) {
@@ -24,15 +23,23 @@ export async function addNewUser(email: string, username: string, password: stri
 }
 
 export async function getUser(email:string ,password:string){
-    const user = await prisma.user.findUnique({where:{email:email}});
-    if(!user){
-        console.log("User not found", email); 
+    try {
+        const user = await prisma.user.findUnique({where:{email:email}});
+        if(!user){
+            console.error("User not found", email); 
+            throw new Error("User not found");
+        }else{
+            console.log("User found", email);
+        }
+        if(!await bcrypt.compare(password , user.password)) {
+            console.error("Invalid password", email);
+            throw new Error("Invalid password");
+        }
+        return user;
+    } catch (error) {
+        console.error(error);
         return null;
-    }else{
-        console.log("User found", email);
     }
-    if(!await bcrypt.compare(password , user.password)) return null;
-    return user;
 }
 
 

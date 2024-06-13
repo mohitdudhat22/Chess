@@ -24,8 +24,7 @@ export default function Game() {
   const [chessBoard , setChessBoard] = useState<Chess | null | any>(null);
   const [board, setBoard] = useState<ChessBoardProps[][] | null | any>(new Chess().board());
   const [isWhite, setIsWhite] = useState<boolean | null>(null);
-  const session = getServerSession(options);
-  console.log(session);
+
   useEffect(() => {
     if (!socket) return;
     const handleMessage = (event: MessageEvent) => {
