@@ -41,13 +41,12 @@ import { INIT_GAME, MOVE } from "./messages";
                     this.pendingUser = socket;
                 }
                 console.log("player joined");
+                console.log(WebSocket);
             }
 
             if(message.type === MOVE){
                 const game = this.games.find((game:any) => game.player1 === socket || game.player2 === socket);
-                console.log(game, "<------this is your game");
                 if(game){
-                    console.log(message, "<------this is your game");
                     if(message.move?.from && message.move?.to){
                         game.makeMove(socket, message.move);
                     }

@@ -1,3 +1,4 @@
+import { User } from "@auth/express";
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcrypt";
 const prisma = new PrismaClient();
@@ -41,6 +42,5 @@ export async function getUser(email:string ,password:string){
         return null;
     }
 }
-
 
 

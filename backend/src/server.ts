@@ -35,7 +35,7 @@ app.post('/signin',validateRequest(addNewUserSchema),async (req:Request, res:Res
         }
         const token = jwt.sign({ id: user.id, email: user.email,password:user.password }, JWT_SECRET, { expiresIn: '1d' });
         res.cookie('token', token, { httpOnly: true, secure: true, sameSite: 'none' });
-        res.status(200).json({ token ,message : "user signed in successfully and token is setted"});
+        res.status(200).json({ token ,email,password,message : "user signed in successfully and token is setted"});
     }else {
         res.status(401).send('Invalid email or password');
     }
@@ -45,6 +45,7 @@ app.post('/signup',async (req:Request,res:Response)=>{
     const {confirmPassword,password,email,username}=req.body;
     console.log(req.body);
     await addNewUser(email,username, password);
+    // await createPlayerProfile(email,username);
     res.send("User added successfully");
 });
 

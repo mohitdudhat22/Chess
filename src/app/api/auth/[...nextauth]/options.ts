@@ -2,6 +2,8 @@ import GithubProvider from 'next-auth/providers/github';
 import type { NextAuthOptions } from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
 import CredentialsProvider from 'next-auth/providers/credentials';
+import { redirect } from 'next/dist/server/api-utils';
+import { RedirectType } from 'next/navigation';
 
 interface Credentials {
   username: string;
@@ -39,13 +41,13 @@ export const options: NextAuthOptions = {
                 'Content-Type': 'application/json',
               },
               body: JSON.stringify({
-                email: credentials?.username,
+                email: credentials?.username ,
                 password: credentials?.password,
               }),
             });
             const data = await response.json();
             if (data.token) {
-              return data.token;
+              return data.token;  
             } else {
               return null;
             }

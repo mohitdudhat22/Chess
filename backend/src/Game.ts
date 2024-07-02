@@ -22,6 +22,12 @@ export class Game {
         if (this.board.turn() !== 'w' && socket === this.player1 || this.board.turn() !== 'b' && socket === this.player2) return;
         try {
             this.board.move(move);
+            // createUsersMove(this.player1,this.board);
+            // createUsersMove(this.player2,this.board);
+            //after every move we need to store the game in side of the database in side of the current game
+
+
+
             console.log("move made",move);
         } catch (error) {
             console.log(error); 
@@ -47,7 +53,7 @@ export class Game {
 
         //TODO : here if chess game get completed then we add this match to the history of the user and make the game terminate and disconnect the socket
 
-        //TODO: here if chess game player get disconnceted then here will add feature to continue the match [after 30 seconds termination of the game] 
+        //TODO: here if chess game player get disconncoted then here will add feature to continue the match [after 30 seconds termination of the game] 
 
         //TODO: user should not be able to play multiple games at once
     }
