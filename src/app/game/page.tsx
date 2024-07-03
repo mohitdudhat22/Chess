@@ -10,7 +10,8 @@ import toast from 'react-hot-toast';
 import { getServerSession } from 'next-auth';
 import { options } from '../api/auth/[...nextauth]/options';
 import { useMyContext } from '@/Context/MyContextProvider';
-
+import { useSession } from 'next-auth/react';
+import "next-auth";
 interface ChessBoardProps {
   board: (
     {
@@ -19,8 +20,20 @@ interface ChessBoardProps {
       color: Color;
     } | null)[][] | undefined
   }
+  declare module "next-auth" {
+    interface Session {
+      user: {
+        id: string;
+        name?: string | null;
+        email?: string | null;
+        image?: string | null;
+      }
+    }
+  }
 export default function Game() {
   const socket: WebSocket | null | any | undefined = useSocket();
+  const { data: session, status } = useSession();
+  console.log(session);
   const [chessBoard , setChessBoard] = useState<Chess | null | any>(null);
   const [board, setBoard] = useState<ChessBoardProps[][] | null | any>(new Chess().board());
   const [isWhite, setIsWhite] = useState<boolean | null>(null);
@@ -88,7 +101,16 @@ export default function Game() {
         </div>
         <div className="flex-1 flex-grow-0 basis-2/5 flex flex-col items-center p-4">
           <h2 className="text-2xl mb-4">Settings & Utilities</h2>
-          <button className="w-full px-4 py-2 mb-4 text-xl bg-blue-600 rounded hover:bg-blue-700" onClick={() => socket.send(JSON.stringify({type:"init_game"})) }>
+          <button
+      className="w-full px-4 py-2 mb-4 text-xl bg-blue-600 rounded hover:bg-blue-700"
+      onClick={() => {
+        if (session?.user?.id) {
+          socket.send(JSON.stringify({ type: "init_game", payload: { id: session.user.id } }));
+        } else {
+          console.error("User ID is missing in session");
+        }
+      }}
+    >
             New Game
           </button>
           <button className="w-full px-4 py-2 mb-4 text-xl bg-blue-600 rounded hover:bg-blue-700">

@@ -10,6 +10,7 @@ export class Game {
     private moves: string[];
     private startTime: Date;
     constructor(player1: WebSocket, player2: WebSocket) {
+        this.id = uuid() as
         this.player1 = player1;
         this.player2 = player2;
         this.board = new Chess();

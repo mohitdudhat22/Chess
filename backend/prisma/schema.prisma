@@ -32,10 +32,28 @@ model PlayerProfile{
   userId      String    @unique
   currentGame String?
   gameHistory String?
-  currentGameWebSocket String? 
+  // currentGameWebSocket WebSocket? 
   user        User?      @relation(fields: [userId], references: [id])
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+}
+
+model Game {
+  id        Int      @id @default(autoincrement())
+  player1Id String
+  player2Id String
+  player1SocketId String
+  player2SocketId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ActiveSession {
+  id        Int      @id @default(autoincrement())
+  playerId  String
+  socketId  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 // model Account {
 //   userId            String
