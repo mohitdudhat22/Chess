@@ -1,11 +1,11 @@
-import { User } from "@auth/express";
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcrypt";
+
 const prisma = new PrismaClient();
 
 export async function addNewUser(email: string, username: string, password: string) {
     const hash = await bcrypt.hash(password, 10);
-    console.log(username,"<<<<<this is username");
+    console.log(username, "<<<<< this is username");
     await prisma.user.create({
         data: {
             email: email,
@@ -16,23 +16,23 @@ export async function addNewUser(email: string, username: string, password: stri
                 },
             },
         },
-        include:{
-            profile:true
+        include: {
+            profile: true
         }
     });
     console.log("user added", username);
 }
 
-export async function getUser(email:string ,password:string){
+export async function getUser(email: string, password: string) {
     try {
-        const user = await prisma.user.findUnique({where:{email:email}});
-        if(!user){
-            console.error("User not found", email); 
+        const user = await prisma.user.findUnique({ where: { email: email } });
+        if (!user) {
+            console.error("User not found", email);
             throw new Error("User not found");
-        }else{
+        } else {
             console.log("User found", email);
         }
-        if(!await bcrypt.compare(password , user.password)) {
+        if (!await bcrypt.compare(password, user.password)) {
             console.error("Invalid password", email);
             throw new Error("Invalid password");
         }
@@ -42,5 +42,3 @@ export async function getUser(email:string ,password:string){
         return null;
     }
 }
-
-

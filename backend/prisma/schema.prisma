@@ -39,7 +39,7 @@ model PlayerProfile{
 }
 
 model Game {
-  id        Int      @id @default(autoincrement())
+  id        String      @id @default(cuid())
   player1Id String
   player2Id String
   player1SocketId String

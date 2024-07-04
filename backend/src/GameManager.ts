@@ -23,28 +23,29 @@ export class GameManager {
         this.addPlayerHandler(socket, socketId, userId);
     }
 
-    public async removeUser(socketId: string) {
-        const user = this.users.get(socketId);
-        if (!user) return;
-
-        this.users.delete(socketId);
+    public async removeUser(socket: WebSocket) {
+        // const userEntry = Array.from(this.users.entries()).find(([_, user]) => user.socket === socket);
+        // if (!userEntry) return;
         
-        const game = Array.from(this.games.values()).find(game =>
-            game.player1.socket === user.socket || game.player2.socket === user.socket
-        );
-        if (game) {
-            game.end(); // Assuming you have an `end()` method in your `Game` class
-            this.games.delete(game.id);
-            await prisma.game.delete({
-                where: { id: game.id },
-            });
-        }
+        // const [socketId, user] = userEntry;
+        // this.users.delete(socketId);
 
-        await prisma.activeSession.deleteMany({
-            where: {
-                socketId: socketId,
-            },
-        });
+        // const game = Array.from(this.games.values()).find(game =>
+        //     game.player1.socket === user.socket || game.player2.socket === user.socket
+        // );
+        // if (game) {
+        //     game.end(); // Assuming you have an `end()` method in your `Game` class
+        //     this.games.delete(game.id);
+        //     await prisma.game.delete({
+        //         where: { id: game.id },
+        //     });
+        // }
+
+        // await prisma.activeSession.deleteMany({
+        //     where: {
+        //         socketId: socketId,
+        //     },
+        // });
     }
 
     private addPlayerHandler(socket: WebSocket, socketId: string, userId: string) {
@@ -53,24 +54,22 @@ export class GameManager {
 
             if (message.type === INIT_GAME) {
                 if (this.pendingUser) {
-                    const game = new Game(this.pendingUser.socket, socket);
-
-
-                    
+                    console.log("game should be started now");
+                    const game = new Game(this.pendingUser.socket, this.pendingUser.userId, socket, userId);                    
                     const createdGame = await prisma.game.create({
                         data: {
                             player1Id: this.pendingUser.userId,
                             player2Id: userId,
-                            player1SocketId: JSON.stringify(this.pendingUser.socket),
-                            player2SocketId: JSON.stringify(socket),
+                            player1SocketId: socketId,
+                            player2SocketId: uuidv4(), // Assuming you store the second socket's id
                         },
                     });
-                    console.log(createdGame.id)
-                    // this.games.set(createdGame.id, game);
+                    console.log(createdGame.id, "<<<< this is created game id")
+                    this.games.set(createdGame.id, game);
                     this.pendingUser = null;
                 } else {
                     this.pendingUser = { socket, userId };
-                    //creating activeSession in database for new Player
+                    console.log(this.pendingUser.userId ,"<<<< this is pending user")
                     await prisma.activeSession.create({
                         data: {
                             playerId: userId,
@@ -78,21 +77,21 @@ export class GameManager {
                         },
                     });
                 }
-                console.log("Player joined");
             }
 
-            if (message.type === MOVE) {
-                const game = Array.from(this.games.values()).find(game =>
-                    game.player1.socket === socket || game.player2.socket === socket
-                );
-                if (game && message.move?.from && message.move?.to) {
-                    game.makeMove(socket, message.move);
-                }
-            }
+            // if (message.type === MOVE) {
+            //     const game = Array.from(this.games.values()).find(game =>
+            //         // game.player1.socket === socket || game.player2.socket === socket
+            //         null
+            //     );
+            //     if (game && message.move?.from && message.move?.to) {
+            //         // game.makeMove(socket, message.move);
+            //     }
+            // }
         });
 
         socket.on("close", async () => {
-            await this.removeUser(socketId);
+            await this.removeUser(socket);
         });
 
         socket.on("error", (error) => {

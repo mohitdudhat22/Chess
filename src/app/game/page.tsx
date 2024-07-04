@@ -33,7 +33,6 @@ interface ChessBoardProps {
 export default function Game() {
   const socket: WebSocket | null | any | undefined = useSocket();
   const { data: session, status } = useSession();
-  console.log(session);
   const [chessBoard , setChessBoard] = useState<Chess | null | any>(null);
   const [board, setBoard] = useState<ChessBoardProps[][] | null | any>(new Chess().board());
   const [isWhite, setIsWhite] = useState<boolean | null>(null);
