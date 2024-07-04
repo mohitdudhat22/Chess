@@ -24,29 +24,32 @@ export class GameManager {
     }
 
     public async removeUser(socket: WebSocket) {
-        // const userEntry = Array.from(this.users.entries()).find(([_, user]) => user.socket === socket);
-        // if (!userEntry) return;
-        
-        // const [socketId, user] = userEntry;
-        // this.users.delete(socketId);
+        //finding and removing the user via the socket in memory
+        const userEntry = Array.from(this.users.entries()).find(([_, user]) => user.socket === socket);
+        if (!userEntry) return;
+        const [socketId, user] = userEntry;
+        this.users.delete(socketId);
+    
+        const game = Array.from(this.games.values()).find(game =>
+            game.player1.socket === user.socket || game.player2.socket === user.socket
+        );
 
-        // const game = Array.from(this.games.values()).find(game =>
-        //     game.player1.socket === user.socket || game.player2.socket === user.socket
-        // );
-        // if (game) {
-        //     game.end(); // Assuming you have an `end()` method in your `Game` class
-        //     this.games.delete(game.id);
-        //     await prisma.game.delete({
-        //         where: { id: game.id },
-        //     });
-        // }
-
+        if (game) {
+            game.end(); 
+            console.log(game.id ,"<<<<<<<<<<<<<<<<<<<this is the game which we wanted to delete")
+            this.games.delete(game.id);
+            await prisma.game.delete({
+                where: { gameId: game.id },
+            });
+        }
+    
         // await prisma.activeSession.deleteMany({
         //     where: {
         //         socketId: socketId,
         //     },
         // });
     }
+    
 
     private addPlayerHandler(socket: WebSocket, socketId: string, userId: string) {
         socket.on("message", async (data: WebSocket) => {
@@ -55,9 +58,10 @@ export class GameManager {
             if (message.type === INIT_GAME) {
                 if (this.pendingUser) {
                     console.log("game should be started now");
-                    const game = new Game(this.pendingUser.socket, this.pendingUser.userId, socket, userId);                    
+                    const game = new Game(this.pendingUser.socket, this.pendingUser.userId, socket, userId);                   
                     const createdGame = await prisma.game.create({
                         data: {
+                            gameId: game.id,
                             player1Id: this.pendingUser.userId,
                             player2Id: userId,
                             player1SocketId: socketId,
@@ -69,13 +73,12 @@ export class GameManager {
                     this.pendingUser = null;
                 } else {
                     this.pendingUser = { socket, userId };
-                    console.log(this.pendingUser.userId ,"<<<< this is pending user")
-                    await prisma.activeSession.create({
-                        data: {
-                            playerId: userId,
-                            socketId: socketId,
-                        },
-                    });
+                    // await prisma.activeSession.create({
+                    //     data: {
+                    //         playerId: userId,
+                    //         socketId: socketId,
+                    //     },
+                    // });
                 }
             }
 

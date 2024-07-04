@@ -12,6 +12,8 @@ import { options } from '../api/auth/[...nextauth]/options';
 import { useMyContext } from '@/Context/MyContextProvider';
 import { useSession } from 'next-auth/react';
 import "next-auth";
+
+//we have to check is any prevGame there in client side
 interface ChessBoardProps {
   board: (
     {
