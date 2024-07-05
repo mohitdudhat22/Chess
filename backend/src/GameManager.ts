@@ -65,7 +65,8 @@ export class GameManager {
                             player1Id: this.pendingUser.userId,
                             player2Id: userId,
                             player1SocketId: socketId,
-                            player2SocketId: uuidv4(), // Assuming you store the second socket's id
+                            player2SocketId: uuidv4(),
+                            expiresAt: new Date(Date.now() + 10 * 60 * 1000)
                         },
                     });
                     console.log(createdGame.id, "<<<< this is created game id")

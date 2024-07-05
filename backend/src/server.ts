@@ -8,7 +8,9 @@ import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import {z } from 'zod'
 import {validateRequest } from './middleware';
+const cron = require('node-cron');
 const app = express();
+const prisma = new PrismaClient();
 
 dotenv.config();
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -48,5 +50,22 @@ app.post('/signup',async (req:Request,res:Response)=>{
     // await createPlayerProfile(email,username);
     res.send("User added successfully");
 });
+
+
+cron.schedule('* * * * *', async () => {
+    const now = new Date();
+    try {
+      const result = await prisma.game.deleteMany({
+        where: {
+          expiresAt: {
+            lte: now,
+          },
+        },
+      });
+      console.log(`Deleted ${result.count} expired games`);
+    } catch (error) {
+      console.error('Error deleting expired games:', error);
+    }
+  });
 
 export default app;
