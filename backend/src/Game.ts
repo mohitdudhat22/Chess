@@ -26,33 +26,37 @@ export class Game {
     }
 
     makeMove(socket: WebSocket, move: { from: string, to: string }) {
-        if ((this.board.turn() !== 'w' && socket === this.player1.socket) || 
-            (this.board.turn() !== 'b' && socket === this.player2.socket)) return;
+        if ((this.board.turn() === 'w' && socket !== this.player1.socket) || 
+            (this.board.turn() === 'b' && socket !== this.player2.socket)) return;
 
         try {
-            this.board.move(move);
-            console.log("move made", move);
+            const moveResult = this.board.move(move);
+            if (moveResult) {
+                this.moves.push(this.board.fen());
+                this.updateGameState();
+                this.checkGameEnd();
+            }
         } catch (error) {
-            console.log(error);
-            return;
-        }
-
-        // Check if game should end
-        if (this.board.isCheckmate() || this.board.isDraw() || this.board.isInsufficientMaterial() || this.board.isThreefoldRepetition()) {
-            this.end();
-        } else {
-            // Continue game
-            this.updateGameState();
+            console.error("Invalid move:", error);
         }
     }
 
     private updateGameState() {
+        const fen = this.board.fen();
         if (this.board.turn() === 'w') {
-            this.player2.socket.send(JSON.stringify({ type: 'state', payload: this.board.fen() }));
-            console.log("white moved");
+            if (this.player2.socket.readyState === WebSocket.OPEN) {
+                this.player2.socket.send(JSON.stringify({ type: 'state', payload: fen }));
+            }
         } else {
-            this.player1.socket.send(JSON.stringify({ type: 'state', payload: this.board.fen() }));
-            console.log("black moved");
+            if (this.player1.socket.readyState === WebSocket.OPEN) {
+                this.player1.socket.send(JSON.stringify({ type: 'state', payload: fen }));
+            }
+        }
+    }
+
+    private checkGameEnd() {
+        if (this.board.isCheckmate() || this.board.isDraw() || this.board.isInsufficientMaterial() || this.board.isThreefoldRepetition()) {
+            this.end();
         }
     }
 
@@ -63,16 +67,13 @@ export class Game {
         const gameOverMessage = this.board.isDraw() ? 'Draw' : 'Checkmate';
 
         if (this.player1.socket.readyState === WebSocket.OPEN) {
-            this.player1.socket.send(gameOverMessage);
-            this.player1.socket.send(JSON.stringify({ type: GAME_OVER, payload: { isCheckmate: this.board.isCheckmate() } }));
+            this.player1.socket.send(JSON.stringify({ type: GAME_OVER, payload: { message: gameOverMessage, isCheckmate: this.board.isCheckmate() } }));
         }
 
         if (this.player2.socket.readyState === WebSocket.OPEN) {
-            this.player2.socket.send(gameOverMessage);
-            this.player2.socket.send(JSON.stringify({ type: GAME_OVER, payload: { isCheckmate: this.board.isCheckmate() } }));
+            this.player2.socket.send(JSON.stringify({ type: GAME_OVER, payload: { message: gameOverMessage, isCheckmate: this.board.isCheckmate() } }));
         }
 
-        // Perform any cleanup or additional logic here
         console.log("Game ended:", gameOverMessage);
     }
 }

@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcrypt";
+import { Game } from "./Game";
 
 const prisma = new PrismaClient();
 
@@ -41,4 +42,8 @@ export async function getUser(email: string, password: string) {
         console.error(error);
         return null;
     }
+}
+
+export async function createNewGame(game:any,  ){
+   
 }

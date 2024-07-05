@@ -74,6 +74,10 @@ export default function Game() {
         case "state":
           setBoard(new Chess(message?.payload).board());
           setChessBoard(new Chess(message?.payload));
+          case "reinit_game":
+            console.log(message);
+            toast.success('Successfully reinitialized!')
+
         default:
           break;
       }
