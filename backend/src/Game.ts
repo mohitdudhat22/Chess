@@ -4,18 +4,18 @@ import { WebSocket } from 'ws';
 import { v4 as uuidv4 } from 'uuid';
 
 export class Game {
-    public player1: { socket: WebSocket, userId: string };
-    public player2: { socket: WebSocket, userId: string };
+    public player1: { socket: WebSocket, userId: string ,socketId:string};
+    public player2: { socket: WebSocket, userId: string ,socketId:string};
     private board: Chess;
     private moves: string[];
     private startTime: Date;
     public id: string;
     private isEnded: boolean;
 
-    constructor(player1Socket: WebSocket, player1Id: string, player2Socket: WebSocket, player2Id: string) {
+    constructor(player1Socket: WebSocket, player1Id: string, player1SocketId:string, player2Socket: WebSocket, player2Id: string, player2SocketId:string) {
         this.id = uuidv4();
-        this.player1 = { socket: player1Socket, userId: player1Id };
-        this.player2 = { socket: player2Socket, userId: player2Id };
+        this.player1 = { socket: player1Socket, userId: player1Id, socketId:player1SocketId, };
+        this.player2 = { socket: player2Socket, userId: player2Id,socketId:player2SocketId, };
         this.board = new Chess();
         this.moves = [];
         this.startTime = new Date();

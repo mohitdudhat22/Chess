@@ -1,16 +1,12 @@
 import express, { Request, Response } from 'express';
-import bcrypt from 'bcrypt';
-import { PrismaClient } from '@prisma/client';
 import { addNewUser, getUser } from './query';
-import { profile } from 'console';
-import { create } from 'domain';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import {z } from 'zod'
 import {validateRequest } from './middleware';
+import { prisma } from './utils';
 const cron = require('node-cron');
 const app = express();
-const prisma = new PrismaClient();
 var cors = require('cors')
 
 dotenv.config();
@@ -51,18 +47,6 @@ app.post('/signup',async (req:Request,res:Response)=>{
     // await createPlayerProfile(email,username);
     res.send("User added successfully");
 });
-
-app.post('/getId'), async(req:Request,res:Response)=>{
-  const {email}=req.body;
-  console.log(req.body);
-  const user = await prisma.user.findUnique({ where: { email: email } });
-  if (user) {
-    res.status(200).json({ id: user.id });
-  } else {
-    res.status(404).send('User not found');
-  }
-}
-
 
 cron.schedule('* * * * *', async () => {
     const now = new Date();

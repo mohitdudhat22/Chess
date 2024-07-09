@@ -1,14 +1,14 @@
 import { WebSocket } from "ws";
 import { Game } from "./Game";
 import { INIT_GAME, MOVE } from "./messages";
-import { PrismaClient } from "@prisma/client";
 import { v4 as uuidv4 } from 'uuid';
+import { createNewGame, findExistingGame } from "./query";
+import { prisma } from "./utils";
 
-const prisma = new PrismaClient();
 
 export class GameManager {
-    private games: Map<string, Game>;
-    private pendingUser: { socket: WebSocket, userId: string, socketId: string } | null;
+    public games: Map<string, Game>;
+    public pendingUser: { socket: WebSocket, userId: string, socketId: string } | null;
     private users: Map<string, { socket: WebSocket, userId: string }>; // socketId , { socket, userId }
 
     constructor() {
@@ -46,68 +46,19 @@ export class GameManager {
         }
     }
 
-    private addPlayerHandler(socket: WebSocket, socketId: string, userId: string) {
+    protected addPlayerHandler(socket: WebSocket, socketId: string, userId: string) {
         socket.on("message", async (data: WebSocket) => {
             const message = JSON.parse(data.toString());
 
             if (message.type === INIT_GAME) {
-                const existingGame = await prisma.game.findFirst({
-                    where: {
-                        OR: [
-                            { player1Id: userId },
-                            { player2Id: userId },
-                        ],
-                    },
-                }).catch(error => {
-                    console.error("Error finding existing game:", error);
-                    return null;
-                });
-
-                if (existingGame) {
-                    console.log(`Player ${userId} already in an existing game. Reconnecting...`);
-                    // this.updatePlayerSocket(socket, existingGame, userId);
-                } else if (this.pendingUser) {
-                    const game = new Game(this.pendingUser.socket, this.pendingUser.userId, socket, userId);
-
-                    const createdGame = await prisma.game.create({
-                        data: {
-                            gameId: game.id,
-                            player1Id: this.pendingUser.userId,
-                            gameState: JSON.stringify(game),
-                            player2Id: userId,
-                            player1SocketId: this.pendingUser.socketId,
-                            player2SocketId: socketId,
-                            expiresAt: new Date(Date.now() + 10 * 60 * 1000)
-                        },
-                    }).catch(error => {
-                        console.error("Error creating game:", error);
-                        return null;
-                    });
-                    console.log(this.pendingUser.userId ,"<<<<<<<<<<<<<<<<<<<<<< this is userId")
-                    if (createdGame) {
-                        await prisma.playerProfile.update({
-                            where: { userId: this.pendingUser.userId },
-                            data: { currentGameId: createdGame.id },
-                        }).catch(error => {
-                            console.error("Error updating player1 profile:", error);
-                        });
-                        
-                        await prisma.playerProfile.update({
-                            where: { userId: userId },
-                            data: { currentGameId: createdGame.id },
-                        }).catch(error => {
-                            console.error("Error updating player2 profile:", error);
-                        });
-
-                        console.log(createdGame.id, "<<<< this is created game id");
-                        this.games.set(createdGame.id, game);
-                        this.pendingUser = null;
-                    }
-                } else {
+                if (this.pendingUser) {
+                        const game = new Game(this.pendingUser.socket, this.pendingUser.userId, this.pendingUser.socketId ,socket, userId, socketId);
+                        const createdGame = await createNewGame(this, game);
+                }else {
                     this.pendingUser = { socket, userId, socketId };
-                }
-            }
+                }    
 
+                
             if (message.type === MOVE) {
                 const game = Array.from(this.games.values()).find(game =>
                     game.player1.socket === socket || game.player2.socket === socket
@@ -116,6 +67,7 @@ export class GameManager {
                     game.makeMove(socket, message.move);
                 }
             }
+        }
         });
 
         socket.on("close", async () => {
@@ -129,20 +81,10 @@ export class GameManager {
     }
 
     public async reconnectPlayer(socket: WebSocket, userId: string) {
-        const game = await prisma.game.findFirst({
-            where: {
-                OR: [
-                    { player1Id: userId },
-                    { player2Id: userId },
-                ],
-            },
-        }).catch(error => {
-            console.error("Error finding game for reconnection:", error);
-            return null;
-        });
+        const game = await findExistingGame(userId);
 
         console.log(this.users);
-        console.log(this.games)
+        console.log(this.games);
         if (game) {
             console.log("you already exist in game table, you have to continue the game");
             const restoredGame = this.games.get(game.id);
@@ -154,10 +96,8 @@ export class GameManager {
                 // Update the user's WebSocket connection
                 if (userId === game.player1Id) {
                     this.users.set(player1SocketId, { socket, userId });
-                    // this.addPlayerHandler(socket, player1SocketId, userId);
                 } else if (userId === game.player2Id) {
                     this.users.set(player2SocketId, { socket, userId });
-                    // this.addPlayerHandler(socket, player2SocketId, userId);
                 }
 
                 // Send initial game state to the reconnected player
