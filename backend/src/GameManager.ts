@@ -2,7 +2,7 @@ import { WebSocket } from "ws";
 import { Game } from "./Game";
 import { INIT_GAME, MOVE } from "./messages";
 import { v4 as uuidv4 } from 'uuid';
-import { createNewGame, findExistingGame } from "./query";
+import { createNewGame, findExistingGame, gameDelete } from "./query";
 import { prisma, updateWebSocket } from "./utils";
 
 
@@ -37,11 +37,7 @@ export class GameManager {
         if (game) {
             game.end();
             this.games.delete(game.id);
-            await prisma.game.delete({
-                where: { gameId: game.id },
-            }).catch(error => {
-                console.error("Error deleting game:", error);
-            });
+            await gameDelete(game);
         }
     }
 
@@ -85,10 +81,8 @@ export class GameManager {
 
     public async reconnectPlayer(socket: WebSocket, userId: string) {
         const game = await findExistingGame(userId);
-        console.log("game for reconnection ------------------>", game);
         if (game) {
             const restoredGame = this.games.get(game.id);
-            console.log("restoredGame -----------------------?",restoredGame);
             if (restoredGame) {
                 updateWebSocket(this,game,socket,userId);
                 socket.send(JSON.stringify({ type: 'reinit_game' }));

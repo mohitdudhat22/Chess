@@ -96,3 +96,11 @@ export async function  findExistingGame(userId:string) {
     });
     return game;
 }
+
+export async function gameDelete(game: any) {
+    await prisma.game.delete({
+        where: { gameId: game.id },
+    }).catch(error => {
+        console.error("Error deleting game:", error);
+    });
+}

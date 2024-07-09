@@ -18,10 +18,8 @@ function updateWebSocket(gameManager:GameManager,game:any,socket: WebSocket, use
     const player1SocketId = game.player1SocketId;
     const player2SocketId = game.player2SocketId;
     if (userId === game.player1Id) {
-        console.log("updated 1")
         gameManager.users.set(player1SocketId, { socket, userId });
     } else if (userId === game.player2Id) {
-        console.log("updated 2")
         gameManager.users.set(player2SocketId, { socket, userId });
     }
 }
