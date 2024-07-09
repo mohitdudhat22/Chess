@@ -11,10 +11,11 @@ import {validateRequest } from './middleware';
 const cron = require('node-cron');
 const app = express();
 const prisma = new PrismaClient();
+var cors = require('cors')
 
 dotenv.config();
 const JWT_SECRET = process.env.JWT_SECRET;
-
+app.use(cors())
 app.use(express.json());
 const addNewUserSchema = z.object(
     {
@@ -50,6 +51,17 @@ app.post('/signup',async (req:Request,res:Response)=>{
     // await createPlayerProfile(email,username);
     res.send("User added successfully");
 });
+
+app.post('/getId'), async(req:Request,res:Response)=>{
+  const {email}=req.body;
+  console.log(req.body);
+  const user = await prisma.user.findUnique({ where: { email: email } });
+  if (user) {
+    res.status(200).json({ id: user.id });
+  } else {
+    res.status(404).send('User not found');
+  }
+}
 
 
 cron.schedule('* * * * *', async () => {

@@ -26,11 +26,14 @@ export class Game {
     }
 
     makeMove(socket: WebSocket, move: { from: string, to: string }) {
+
+        //here after the every move update the gameState in game Model
         if ((this.board.turn() === 'w' && socket !== this.player1.socket) || 
             (this.board.turn() === 'b' && socket !== this.player2.socket)) return;
 
         try {
             const moveResult = this.board.move(move);
+            console.log("game object ------------------------------------------------->" , this.board)
             if (moveResult) {
                 this.moves.push(this.board.fen());
                 this.updateGameState();

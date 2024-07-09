@@ -40,6 +40,8 @@ export class GameManager {
             this.games.delete(game.id);
             await prisma.game.delete({
                 where: { gameId: game.id },
+            }).catch(error => {
+                console.error("Error deleting game:", error);
             });
         }
     }
@@ -56,6 +58,9 @@ export class GameManager {
                             { player2Id: userId },
                         ],
                     },
+                }).catch(error => {
+                    console.error("Error finding existing game:", error);
+                    return null;
                 });
 
                 if (existingGame) {
@@ -68,15 +73,36 @@ export class GameManager {
                         data: {
                             gameId: game.id,
                             player1Id: this.pendingUser.userId,
+                            gameState: JSON.stringify(game),
                             player2Id: userId,
                             player1SocketId: this.pendingUser.socketId,
                             player2SocketId: socketId,
                             expiresAt: new Date(Date.now() + 10 * 60 * 1000)
                         },
+                    }).catch(error => {
+                        console.error("Error creating game:", error);
+                        return null;
                     });
-                    console.log(createdGame.id, "<<<< this is created game id");
-                    this.games.set(createdGame.id, game);
-                    this.pendingUser = null;
+                    console.log(this.pendingUser.userId ,"<<<<<<<<<<<<<<<<<<<<<< this is userId")
+                    if (createdGame) {
+                        await prisma.playerProfile.update({
+                            where: { userId: this.pendingUser.userId },
+                            data: { currentGameId: createdGame.id },
+                        }).catch(error => {
+                            console.error("Error updating player1 profile:", error);
+                        });
+                        
+                        await prisma.playerProfile.update({
+                            where: { userId: userId },
+                            data: { currentGameId: createdGame.id },
+                        }).catch(error => {
+                            console.error("Error updating player2 profile:", error);
+                        });
+
+                        console.log(createdGame.id, "<<<< this is created game id");
+                        this.games.set(createdGame.id, game);
+                        this.pendingUser = null;
+                    }
                 } else {
                     this.pendingUser = { socket, userId, socketId };
                 }
@@ -110,6 +136,9 @@ export class GameManager {
                     { player2Id: userId },
                 ],
             },
+        }).catch(error => {
+            console.error("Error finding game for reconnection:", error);
+            return null;
         });
 
         console.log(this.users);
@@ -133,7 +162,6 @@ export class GameManager {
 
                 // Send initial game state to the reconnected player
                 socket.send(JSON.stringify({ type: 'reinit_game' }));
-
 
                 console.log(`Reconnected player ${userId} to game ${game.gameId}`);
             } else {

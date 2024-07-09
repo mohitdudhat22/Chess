@@ -39,8 +39,8 @@ export const options: NextAuthOptions = {
       },
       async authorize(credentials) {
         // Add logic here to look up the user from the credentials supplied
-        const user = { id: "cly5ir7uf0000o3mcnr57fr85", name: "test2", email: "test2@gmail.com" } // Example user lookup
-        const user1 = { id: "cly5l40tb0002o3mc7gx3ywdv", name: "test1", email: "test1@gmail.com" } // Example user lookup
+        const user = { id: "clye0kgqf0002mfrp79rty4l8", name: "test2", email: "test2@gmail.com" } // Example user lookup
+        const user1 = { id: "clye0k9ja0000mfrpkfr59kz5", name: "test1", email: "test1@gmail.com" } // Example user lookup
         if (credentials?.email === user.email && credentials?.password === "test123") { // Replace with real validation
           return user
         }else if(credentials?.email === user1.email && credentials?.password === "test123"){

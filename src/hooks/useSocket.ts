@@ -8,6 +8,7 @@ export const useSocket = () => {
     const [socket, setSocket] = useState<WebSocket | null>(null);
     const { data: session, status } = useSession();
     const userId = session?.user?.id;
+    console.log(userId)
 
     useEffect(() => {
         if (userId) {
