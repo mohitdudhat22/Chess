@@ -2,6 +2,7 @@
 import { Color, PieceSymbol, Square, validateFen } from "chess.js";
 
 export const getColor = (rowIndex: number, columnIndex: number): string => {
+    console.log
     return (rowIndex + columnIndex) % 2 === 0 ? "bg-white" : "bg-gray-800";
   };
 

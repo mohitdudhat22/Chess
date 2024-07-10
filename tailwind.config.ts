@@ -1,5 +1,6 @@
 import type { Config } from "tailwindcss";
 const { fontFamily } = require("tailwindcss/defaultTheme");
+
 const config: Config = {
   content: [
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
@@ -18,6 +19,11 @@ const config: Config = {
       },
     },
   },
+  safelist: [
+    'bg-white',
+    'bg-gray-800'
+  ],
   plugins: [],
 };
+
 export default config;

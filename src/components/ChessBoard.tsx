@@ -124,11 +124,7 @@ const ChessBoard: React.FC<ChessBoardProps> = ({
           {row.map((square, columnIndex) => (
             <div
               key={`${rowIndex}-${columnIndex}`}
-              className={`h-[100px] w-min-[100px] flex justify-center items-center  ${getColor(
-                rowIndex,
-                columnIndex
-              )}`}
-
+              className={`h-[100px] w-min-[100px] flex justify-center items-center ${(rowIndex + columnIndex) % 2 === 0 ? "bg-white" : "bg-gray-800"}`}
               data-row-index={rowIndex}
               data-column-index={columnIndex}
               onDragOver={handleDragOver}

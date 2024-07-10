@@ -21,7 +21,28 @@ wss.on('connection', async function connection(ws: WebSocket, req: any) {
             gameManager.addPlayer(ws, userId);
         }
 
-        ws.on('close', () => console.log('Connection closed'));
+        ws.on('message', async (message: string) => {
+            try {
+                const parsedMessage = JSON.parse(message);
+                if (parsedMessage.type === 'state') {
+                    console.log(`Received state from user ${userId}:`, parsedMessage.payload);
+                    // Save the state
+                    // await gameManager.saveGameState(userId, parsedMessage.payload);
+                } else {
+                    // Handle other types of messages
+                    console.log(`Received message from user ${userId}:`, parsedMessage);
+                    // gameManager.handleMessage(userId, parsedMessage);
+                }
+            } catch (error) {
+                console.error('Error parsing message:', error);
+            }
+        });
+
+        ws.on('close', () => {
+            console.log('Connection closed for user:', userId);
+            // gameManager.removePlayer(userId);
+        });
+        
         ws.on('error', console.error);
     } else {
         ws.close();

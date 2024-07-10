@@ -38,6 +38,7 @@ export default function Game() {
   const [chessBoard , setChessBoard] = useState<Chess | null | any>(null);
   const [board, setBoard] = useState<ChessBoardProps[][] | null | any>(new Chess().board());
   const [isWhite, setIsWhite] = useState<boolean | null>(null);
+  const {setChessState} = useMyContext();
 
   useEffect(() => {
     if (!socket) return;
@@ -77,10 +78,11 @@ export default function Game() {
           case "reinit_game":
             console.log(message);
             toast.success('Successfully reinitialized!')
-
         default:
           break;
       }
+      setChessState(chessBoard?.ascii());
+
     };
 
     socket.onmessage = handleMessage;
@@ -92,6 +94,7 @@ export default function Game() {
     };
   }, [socket]);
   console.log(chessBoard?.ascii());
+
   return (
     <div className="container m-auto flex flex-col items-center justify-center min-h-screen text-white">
       <Head>
