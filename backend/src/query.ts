@@ -1,6 +1,7 @@
 import { GameManager } from './GameManager';
 import bcrypt from "bcrypt";
 import { prisma } from './utils';
+import { Game } from './Game';
 
 
 export async function addNewUser(email: string, username: string, password: string) {
@@ -43,7 +44,7 @@ export async function getUser(email: string, password: string) {
     }
 }
 
-export async function createNewGame(gameManager: GameManager, game: any) {
+export async function createNewGame(gameManager: GameManager, game: Game) {
     const createdGame = await prisma.game.create({
         data: {
             gameId: game.id,
@@ -97,7 +98,7 @@ export async function  findExistingGame(userId:string) {
     return game;
 }
 
-export async function gameDelete(game: any) {
+export async function gameDelete(game: Game) {
     await prisma.game.delete({
         where: { gameId: game.id },
     }).catch(error => {
